@@ -465,7 +465,7 @@ function render() {
     if(keys['z']||keys['s']||keys['q']||keys['d']) player.walkFrame += 0.2;
 }
 
-        if(keys['z']||keys['s']||keys['q']||keys['d']) player.walkFrame += 0.2;
+
         if(map === "DEHORS" && player.y < 230 && player.x > 400 && player.x < 500) { map = "MAGASIN"; player.y = 550; playSfx(200, 'sine', 0.2); }
         if(map === "MAGASIN" && player.y > 610) { map = "DEHORS"; player.y = 260; playSfx(200, 'sine', 0.2); }
     }
@@ -482,6 +482,7 @@ function updateUI() {
 </script>
 </body>
 </html>
+
 
 
 
