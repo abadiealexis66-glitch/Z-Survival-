@@ -1,63 +1,67 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Z-SURVIVAL: VRAIE VERSION FINALE</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <style>
-        /* REPRISE INTÉGRALE DU CSS DE GAME FINISHH 4 */
-        body { margin: 0; background: #050505; color: white; font-family: 'Segoe UI', sans-serif; overflow: hidden; display: flex; align-items: center; justify-content: center; height: 100vh; touch-action: none; }
-        #game-container { position: relative; border: 4px solid #222; box-shadow: 0 0 100px #000; width: 900px; height: 650px; background: #1a3d1a; }
-        canvas { display: block; image-rendering: pixelated; width: 100%; height: 100%; }
-        
-        /* HUD ORIGINAL */
-        #hud, #kill-counter { position: absolute; pointer-events: none; display: none; z-index: 10; scale: 0.9; }
-        #hud { top: 20px; left: 20px; }
-        #kill-counter { top: 20px; right: 20px; text-align: right; }
-        .stat-box { background: rgba(0,0,0,0.85); padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 8px; min-width: 180px; }
-        .bar-bg { background: #222; height: 10px; border-radius: 5px; overflow: hidden; margin-top: 5px; }
-        #hp-fill { width: 100%; height: 100%; background: linear-gradient(90deg, #ff416c, #ff4b2b); transition: 0.2s; }
-        .rank-badge { padding: 5px 15px; border-radius: 4px; font-weight: 900; font-size: 14px; text-transform: uppercase; border: 2px solid; background: #333; border-color: #555; color: #aaa; }
+    <meta charset="UTF-8">
+    <title>Z-SURVIVAL: VRAIE VERSION FINALE</title>
+  <link rel="icon" type="image/png" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <style>
+        /* REPRISE INTÉGRALE DU CSS DE GAME FINISHH 4 */
+        body { margin: 0; background: #050505; color: white; font-family: 'Segoe UI', sans-serif; overflow: hidden; display: flex; align-items: center; justify-content: center; height: 100vh; touch-action: none; }
+        #game-container { position: relative; border: 4px solid #222; box-shadow: 0 0 100px #000; width: 900px; height: 650px; background: #1a3d1a; }
+        canvas { display: block; image-rendering: pixelated; width: 100%; height: 100%; }
+        
+        /* HUD ORIGINAL */
+        #hud, #kill-counter { position: absolute; pointer-events: none; display: none; z-index: 10; scale: 0.9; }
+        #hud { top: 20px; left: 20px; }
+        #kill-counter { top: 20px; right: 20px; text-align: right; }
+        .stat-box { background: rgba(0,0,0,0.85); padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 8px; min-width: 180px; }
+        .bar-bg { background: #222; height: 10px; border-radius: 5px; overflow: hidden; margin-top: 5px; }
+        #hp-fill { width: 100%; height: 100%; background: linear-gradient(90deg, #ff416c, #ff4b2b); transition: 0.2s; }
+        .rank-badge { padding: 5px 15px; border-radius: 4px; font-weight: 900; font-size: 14px; text-transform: uppercase; border: 2px solid; background: #333; border-color: #555; color: #aaa; }
 
-        /* CONTRÔLES MOBILES DISCRETS */
-        .mobile-ui { position: absolute; z-index: 50; user-select: none; }
-        #joy-base { bottom: 40px; left: 40px; width: 120px; height: 120px; background: rgba(255,255,255,0.1); border-radius: 50%; border: 1px solid rgba(255,255,255,0.2); }
-        #joy-stick { position: absolute; top: 35px; left: 35px; width: 50px; height: 50px; background: rgba(255,255,255,0.3); border-radius: 50%; }
-        #btns { bottom: 40px; right: 20px; display: flex; flex-direction: column; gap: 10px; }
-        .btn-m { width: 80px; height: 80px; border-radius: 50%; background: rgba(231, 76, 60, 0.4); border: 2px solid white; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; }
+        /* CONTRÔLES MOBILES DISCRETS */
+        .mobile-ui { position: absolute; z-index: 50; user-select: none; }
+        #joy-base { bottom: 40px; left: 40px; width: 120px; height: 120px; background: rgba(255,255,255,0.1); border-radius: 50%; border: 1px solid rgba(255,255,255,0.2); }
+        #joy-stick { position: absolute; top: 35px; left: 35px; width: 50px; height: 50px; background: rgba(255,255,255,0.3); border-radius: 50%; }
+        #btns { bottom: 40px; right: 20px; display: flex; flex-direction: column; gap: 10px; }
+        .btn-m { width: 80px; height: 80px; border-radius: 50%; background: rgba(231, 76, 60, 0.4); border: 2px solid white; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; }
 
-        #start-screen { position: absolute; inset: 0; background: radial-gradient(circle, #2c3e50, #000); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; }
-    </style>
+        #start-screen { position: absolute; inset: 0; background: radial-gradient(circle, #2c3e50, #000); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; }
+    </style>
 </head>
 <body>
 
 <div id="game-container">
-    <div id="start-screen">
-        <h1 style="font-size: 50px; color:#e74c3c; margin:0;">Z-SURVIVAL</h1>
-        <button style="background:#e74c3c; color:white; padding:15px 40px; border:none; border-radius:30px; font-weight:bold; margin-top:20px;" onclick="startGame()">LANCER MOBILE</button>
-    </div>
+    <div id="start-screen">
+        <h1 style="font-size: 50px; color:#e74c3c; margin:0;">Z-SURVIVAL</h1>
+        <button style="background:#e74c3c; color:white; padding:15px 40px; border:none; border-radius:30px; font-weight:bold; margin-top:20px;" onclick="startGame()">LANCER MOBILE</button>
+    </div>
 
-    <div id="hud">
-        <div class="stat-box"><small>SANTÉ</small><div class="bar-bg"><div id="hp-fill"></div></div></div>
-        <div class="stat-box" style="border-left: 4px solid #f1c40f;">
-            <div style="color:#f1c40f;">💰 <span id="money">100</span> $</div>
-            <div style="color:#2ecc71; font-size: 13px;">🌵 CACTUS : <span id="cactus-qty">0</span></div>
-        </div>
-    </div>
+    <div id="hud">
+        <div class="stat-box"><small>SANTÉ</small><div class="bar-bg"><div id="hp-fill"></div></div></div>
+        <div class="stat-box" style="border-left: 4px solid #f1c40f;">
+            <div style="color:#f1c40f;">💰 <span id="money">100</span> $</div>
+            <div style="color:#2ecc71; font-size: 13px;">🌵 CACTUS : <span id="cactus-qty">0</span></div>
+        </div>
+    </div>
 
-    <div id="kill-counter">
-        <div id="rank-display" class="rank-badge">DÉBUTANT</div>
-        <div class="stat-box">💀 <span id="current-kills">0</span><br><small>RECORD: 345</small></div>
-    </div>
+    <div id="kill-counter">
+        <div id="rank-display" class="rank-badge">DÉBUTANT</div>
+        <div class="stat-box">💀 <span id="current-kills">0</span><br><small>RECORD: 345</small></div>
+    </div>
 
-    <div id="joy-base" class="mobile-ui"><div id="joy-stick"></div></div>
-    <div id="btns" class="mobile-ui">
-        <div class="btn-m" style="width:100px; height:100px; background:rgba(231,76,60,0.6);" id="fire">TIRER</div>
-        <div class="btn-m" onclick="pickup(); shopAction();">ACTION</div>
-        <div class="btn-m" onclick="eat();">SOIN</div>
-    </div>
+    <div id="joy-base" class="mobile-ui"><div id="joy-stick"></div></div>
+    <div id="btns" class="mobile-ui">
+        <div class="btn-m" style="width:100px; height:100px; background:rgba(231,76,60,0.6);" id="fire">TIRER</div>
+        <div class="btn-m" onclick="pickup(); shopAction();">ACTION</div>
+        <div class="btn-m" onclick="eat();">SOIN</div>
+    </div>
 
-    <canvas id="game" width="900" height="650"></canvas>
+    <canvas id="game" width="900" height="650"></canvas>
 </div>
 
 <script>
@@ -76,84 +80,84 @@ const jBase = document.getElementById('joy-base');
 const jStick = document.getElementById('joy-stick');
 jBase.addEventListener('touchstart', (e) => { joy.active = true; });
 window.addEventListener('touchmove', (e) => {
-    if(!joy.active) return;
-    let t = e.touches[0];
-    let r = jBase.getBoundingClientRect();
-    let dx = t.clientX - (r.left + 60);
-    let dy = t.clientY - (r.top + 60);
-    let d = Math.min(Math.hypot(dx, dy), 45);
-    joy.angle = Math.atan2(dy, dx);
-    joy.x = Math.cos(joy.angle) * (d/45);
-    joy.y = Math.sin(joy.angle) * (d/45);
-    jStick.style.transform = `translate(${joy.x*45}px, ${joy.y*45}px)`;
+    if(!joy.active) return;
+    let t = e.touches[0];
+    let r = jBase.getBoundingClientRect();
+    let dx = t.clientX - (r.left + 60);
+    let dy = t.clientY - (r.top + 60);
+    let d = Math.min(Math.hypot(dx, dy), 45);
+    joy.angle = Math.atan2(dy, dx);
+    joy.x = Math.cos(joy.angle) * (d/45);
+    joy.y = Math.sin(joy.angle) * (d/45);
+    jStick.style.transform = `translate(${joy.x*45}px, ${joy.y*45}px)`;
 });
 window.addEventListener('touchend', () => { joy.active = false; joy.x = joy.y = 0; jStick.style.transform = 'translate(0,0)'; });
 document.getElementById('fire').addEventListener('touchstart', (e) => { e.preventDefault(); attack(); });
 
 // DESSIN DU SHOP EXACT (IMAGE DE DROITE)
 function drawShop() {
-    let mx = 350, my = 80, mw = 200, mh = 150;
-    // Murs avec planches
-    ctx.fillStyle = "#4e342e"; ctx.fillRect(mx, my, mw, mh);
-    ctx.fillStyle = "#3e2723"; for(let i=0; i<mh; i+=15) ctx.fillRect(mx, my+i, mw, 2);
-    // Toit Rouge Texturé
-    ctx.fillStyle = "#c0392b"; ctx.beginPath(); ctx.moveTo(mx-30, my); ctx.lineTo(mx+mw/2, my-80); ctx.lineTo(mx+mw+30, my); ctx.fill();
-    // Fenêtres blanches (le détail qui manquait !)
-    ctx.fillStyle = "#add8e6"; ctx.fillRect(mx+20, my+30, 40, 40); ctx.fillRect(mx+mw-60, my+30, 40, 40);
-    ctx.strokeStyle = "#fff"; ctx.lineWidth = 2; ctx.strokeRect(mx+20, my+30, 40, 40); ctx.strokeRect(mx+mw-60, my+30, 40, 40);
-    // Porte bleue
-    ctx.fillStyle = "#3498db"; ctx.fillRect(mx+mw/2-40, my+80, 80, 70);
-    // Lampes oranges
-    ctx.fillStyle = "#f39c12"; ctx.beginPath(); ctx.arc(mx+50, my+100, 5, 0, Math.PI*2); ctx.arc(mx+mw-50, my+100, 5, 0, Math.PI*2); ctx.fill();
-    // Texte SHOP
-    ctx.fillStyle = "#f1c40f"; ctx.font = "bold 24px 'Courier New'"; ctx.fillText("S H O P", mx+55, my-20);
+    let mx = 350, my = 80, mw = 200, mh = 150;
+    // Murs avec planches
+    ctx.fillStyle = "#4e342e"; ctx.fillRect(mx, my, mw, mh);
+    ctx.fillStyle = "#3e2723"; for(let i=0; i<mh; i+=15) ctx.fillRect(mx, my+i, mw, 2);
+    // Toit Rouge Texturé
+    ctx.fillStyle = "#c0392b"; ctx.beginPath(); ctx.moveTo(mx-30, my); ctx.lineTo(mx+mw/2, my-80); ctx.lineTo(mx+mw+30, my); ctx.fill();
+    // Fenêtres blanches (le détail qui manquait !)
+    ctx.fillStyle = "#add8e6"; ctx.fillRect(mx+20, my+30, 40, 40); ctx.fillRect(mx+mw-60, my+30, 40, 40);
+    ctx.strokeStyle = "#fff"; ctx.lineWidth = 2; ctx.strokeRect(mx+20, my+30, 40, 40); ctx.strokeRect(mx+mw-60, my+30, 40, 40);
+    // Porte bleue
+    ctx.fillStyle = "#3498db"; ctx.fillRect(mx+mw/2-40, my+80, 80, 70);
+    // Lampes oranges
+    ctx.fillStyle = "#f39c12"; ctx.beginPath(); ctx.arc(mx+50, my+100, 5, 0, Math.PI*2); ctx.arc(mx+mw-50, my+100, 5, 0, Math.PI*2); ctx.fill();
+    // Texte SHOP
+    ctx.fillStyle = "#f1c40f"; ctx.font = "bold 24px 'Courier New'"; ctx.fillText("S H O P", mx+55, my-20);
 }
 
 // ZOMBIES AVEC BRAS (IMAGE DE DROITE)
 function drawZombie(x, y, frame) {
-    let move = Math.sin(frame)*5;
-    ctx.fillStyle = "rgba(0,0,0,0.3)"; ctx.beginPath(); ctx.ellipse(x+20, y+50, 15, 6, 0, 0, 7); ctx.fill();
-    ctx.fillStyle = "#4a7c44"; ctx.fillRect(x+5, y+15, 30, 35);
-    ctx.fillStyle = "#74a57f"; ctx.fillRect(x+10, y, 20, 20);
-    // Yeux verts
-    ctx.fillStyle = "#0f0"; ctx.fillRect(x+13, y+6, 5, 5); ctx.fillRect(x+22, y+6, 5, 5);
-    // Bras tendus (comme sur l'image de droite !)
-    ctx.fillStyle = "#74a57f"; ctx.fillRect(x-8, y+20+move, 15, 8); ctx.fillRect(x+33, y+20-move, 15, 8);
+    let move = Math.sin(frame)*5;
+    ctx.fillStyle = "rgba(0,0,0,0.3)"; ctx.beginPath(); ctx.ellipse(x+20, y+50, 15, 6, 0, 0, 7); ctx.fill();
+    ctx.fillStyle = "#4a7c44"; ctx.fillRect(x+5, y+15, 30, 35);
+    ctx.fillStyle = "#74a57f"; ctx.fillRect(x+10, y, 20, 20);
+    // Yeux verts
+    ctx.fillStyle = "#0f0"; ctx.fillRect(x+13, y+6, 5, 5); ctx.fillRect(x+22, y+6, 5, 5);
+    // Bras tendus (comme sur l'image de droite !)
+    ctx.fillStyle = "#74a57f"; ctx.fillRect(x-8, y+20+move, 15, 8); ctx.fillRect(x+33, y+20-move, 15, 8);
 }
 
 function render() {
-    if(!isRunning) return;
-    ctx.clearRect(0,0,900,650);
-    if(map === "DEHORS") {
-        ctx.fillStyle = "#2d5a27"; ctx.fillRect(0,0,900,650);
-        drawShop();
-        if(joy.active) { player.x += joy.x * stats.speed; player.y += joy.y * stats.speed; player.walkFrame += 0.2; }
-        if(Math.random() < 0.01) zombies.push({x: Math.random()*900, y: -50, f: 0});
-        zombies.forEach((z, zi) => {
-            let a = Math.atan2(player.y - z.y, player.x - z.x);
-            z.x += Math.cos(a)*1.7; z.y += Math.sin(a)*1.7; z.f += 0.1;
-            drawZombie(z.x, z.y, z.f);
-            if(Math.hypot(player.x-z.x, player.y-z.y) < 35) { stats.hp -= 0.4; updateUI(); }
-        });
-        bullets.forEach((b, i) => {
-            b.x += b.vx; b.y += b.vy; ctx.fillStyle = "#ff0"; ctx.fillRect(b.x, b.y, 8, 3);
-            zombies.forEach((z, zi) => { if(Math.hypot(b.x-z.x-20, b.y-z.y-20) < 30) { zombies.splice(zi,1); bullets.splice(i,1); stats.money+=50; stats.kills++; updateUI(); } });
-        });
-        items.forEach(it => { ctx.fillStyle="white"; ctx.fillText(it.name+" [E]", it.x-15, it.y-15); ctx.fillRect(it.x, it.y, 30, 10); });
-        if(player.y < 230 && player.x > 400 && player.x < 500) { map = "MAGASIN"; player.y = 550; }
-    } else {
-        ctx.fillStyle = "#111"; ctx.fillRect(0,0,900,650);
-        ctx.fillStyle = "white"; ctx.fillText("ENOHA LE MARCHAND (SOIN 50$)", 300, 140);
-        if(joy.y > 0.5) { map = "DEHORS"; player.y = 260; }
-    }
-    // JOUEUR
-    let bob = Math.sin(player.walkFrame)*4;
-    ctx.fillStyle = "#34495e"; ctx.fillRect(player.x+5, player.y+15+bob, 30, 32);
-    ctx.fillStyle = "#ffdbac"; ctx.fillRect(player.x+10, player.y+bob, 20, 20);
-    if(player.weapon) { ctx.fillStyle="#111"; ctx.fillRect(player.x+15, player.y+25+bob, 30, 8); }
+    if(!isRunning) return;
+    ctx.clearRect(0,0,900,650);
+    if(map === "DEHORS") {
+        ctx.fillStyle = "#2d5a27"; ctx.fillRect(0,0,900,650);
+        drawShop();
+        if(joy.active) { player.x += joy.x * stats.speed; player.y += joy.y * stats.speed; player.walkFrame += 0.2; }
+        if(Math.random() < 0.01) zombies.push({x: Math.random()*900, y: -50, f: 0});
+        zombies.forEach((z, zi) => {
+            let a = Math.atan2(player.y - z.y, player.x - z.x);
+            z.x += Math.cos(a)*1.7; z.y += Math.sin(a)*1.7; z.f += 0.1;
+            drawZombie(z.x, z.y, z.f);
+            if(Math.hypot(player.x-z.x, player.y-z.y) < 35) { stats.hp -= 0.4; updateUI(); }
+        });
+        bullets.forEach((b, i) => {
+            b.x += b.vx; b.y += b.vy; ctx.fillStyle = "#ff0"; ctx.fillRect(b.x, b.y, 8, 3);
+            zombies.forEach((z, zi) => { if(Math.hypot(b.x-z.x-20, b.y-z.y-20) < 30) { zombies.splice(zi,1); bullets.splice(i,1); stats.money+=50; stats.kills++; updateUI(); } });
+        });
+        items.forEach(it => { ctx.fillStyle="white"; ctx.fillText(it.name+" [E]", it.x-15, it.y-15); ctx.fillRect(it.x, it.y, 30, 10); });
+        if(player.y < 230 && player.x > 400 && player.x < 500) { map = "MAGASIN"; player.y = 550; }
+    } else {
+        ctx.fillStyle = "#111"; ctx.fillRect(0,0,900,650);
+        ctx.fillStyle = "white"; ctx.fillText("ENOHA LE MARCHAND (SOIN 50$)", 300, 140);
+        if(joy.y > 0.5) { map = "DEHORS"; player.y = 260; }
+    }
+    // JOUEUR
+    let bob = Math.sin(player.walkFrame)*4;
+    ctx.fillStyle = "#34495e"; ctx.fillRect(player.x+5, player.y+15+bob, 30, 32);
+    ctx.fillStyle = "#ffdbac"; ctx.fillRect(player.x+10, player.y+bob, 20, 20);
+    if(player.weapon) { ctx.fillStyle="#111"; ctx.fillRect(player.x+15, player.y+25+bob, 30, 8); }
 
-    if(stats.hp <= 0) location.reload();
-    requestAnimationFrame(render);
+    if(stats.hp <= 0) location.reload();
+    requestAnimationFrame(render);
 }
 
 function attack() { if(!player.weapon || map !== "DEHORS") return; let a = joy.active ? joy.angle : 0; bullets.push({x: player.x+20, y: player.y+20, vx: Math.cos(a)*15, vy: Math.sin(a)*15}); }
