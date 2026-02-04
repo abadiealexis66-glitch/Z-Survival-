@@ -1,488 +1,208 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<head>
     <meta charset="UTF-8">
-    <title>Z-SURVIVAL: DEFINITIVE EDITION</title>
-    <link rel="icon" type="image/png" href="icon.png">
-<link rel="apple-touch-icon" href="icon.png">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-    <style>#mobile-controls {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    z-index: 50;
-}
-
-#joystick {
-    position: absolute;
-    bottom: 40px;
-    left: 40px;
-    width: 140px;
-    height: 140px;
-    background: rgba(255,255,255,0.08);
-    border-radius: 50%;
-    pointer-events: auto;
-}
-
-#stick {
-    position: absolute;
-    width: 60px;
-    height: 60px;
-    background: rgba(255,255,255,0.4);
-    border-radius: 50%;
-    top: 40px;
-    left: 40px;
-}
-
-.mobile-btn {
-    position: absolute;
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    border: none;
-    font-size: 30px;
-    background: rgba(255,255,255,0.2);
-    color: white;
-    pointer-events: auto;
-}
-
-#btn-shoot { bottom: 60px; right: 40px; }
-#btn-eat { bottom: 150px; right: 120px; }
-#btn-action { bottom: 230px; right: 40px; }
-
-        <!-- CONTROLES TACTILES MOBILE -->
-<div id="mobile-controls">
-  <div id="joystick">
-    <div id="stick"></div>
-  </div>
-
-  <button class="mobile-btn" id="btn-shoot">🔥</button>
-  <button class="mobile-btn" id="btn-eat">🌵</button>
-  <button class="mobile-btn" id="btn-action">🛒</button>
-</div>
-
-        body { margin: 0; background: #050505; color: white; font-family: 'Segoe UI', sans-serif; overflow: hidden; display: flex; align-items: center; justify-content: center; height: 100vh; }
-        #game-container { position: relative; border: 4px solid #222; box-shadow: 0 0 100px #000; }
-        canvas { display: block; image-rendering: pixelated; background: #1a3d1a; cursor: crosshair; }
+    <title>Z-SURVIVAL: FULL HD EDITION</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <style>
+        body { margin: 0; background: #000; color: white; font-family: 'Segoe UI', sans-serif; overflow: hidden; display: flex; align-items: center; justify-content: center; height: 100vh; touch-action: none; }
+        
+        /* CONTAINER FULL HD */
+        #game-container { position: relative; width: 100vw; height: 100vh; max-width: 1920px; max-height: 1080px; background: #1a3d1a; overflow: hidden; }
+        
+        /* CANVAS HD - Suppression du pixelated pour plus de douceur */
+        canvas { display: block; width: 100%; height: 100%; image-rendering: auto; }
+        
         #hud, #kill-counter { position: absolute; pointer-events: none; display: none; z-index: 10; }
-        #hud { top: 20px; left: 20px; }
-        #kill-counter { top: 20px; right: 20px; text-align: right; }
-        .stat-box { background: rgba(0,0,0,0.85); padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 8px; min-width: 180px; backdrop-filter: blur(5px); }
-        .bar-bg { background: #222; height: 10px; border-radius: 5px; overflow: hidden; margin-top: 5px; }
-        #hp-fill { width: 100%; height: 100%; background: linear-gradient(90deg, #ff416c, #ff4b2b); transition: 0.2s; }
-        .rank-badge { padding: 5px 15px; border-radius: 4px; font-weight: 900; font-size: 14px; text-transform: uppercase; border: 2px solid; display: inline-block; margin-bottom: 5px; min-width: 100px; text-align: center;}
-        .rank-none { background: #333; border-color: #555; color: #aaa; }
-        .rank-bronze { background: #cd7f32; border-color: #8b4513; color: #fff; }
-        .rank-argent { background: #c0c0c0; border-color: #808080; color: #333; }
-        .rank-or { background: #ffd700; border-color: #b8860b; color: #000; box-shadow: 0 0 10px #ffd700; }
-        .rank-diamant { background: #00bfff; border-color: #fff; color: #fff; box-shadow: 0 0 10px #00bfff; }
-        .rank-elite { background: #2f4f4f; border-color: #00ced1; color: #fff; border-style: dashed; }
-        .rank-champion { background: #ff4500; border-color: #ff8c00; color: #fff; animation: pulse 1s infinite alternate; }
-        .rank-unreal { background: #8a2be2; border-color: #bf00ff; color: #fff; box-shadow: 0 0 15px #bf00ff; }
-        .rank-mega unreal { background: linear-gradient(90deg, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff); background-size: 400%; animation: rainbow 3s infinite linear; color: white; border-color: #fff; box-shadow: 0 0 25px #fff; }
-        .rank-ultra-unreal { background: #000; color: #fff; border-color: #fff; box-shadow: 0 0 30px #fff; animation: glitch 0.3s infinite; }
-        @keyframes rainbow { 0%{background-position:0%} 100%{background-position:400%} }
-        @keyframes pulse { from { opacity: 0.8; } to { opacity: 1; transform: scale(1.05); } }
-        @keyframes glitch { 0% { transform: translate(0); } 20% { transform: translate(-2px, 2px); } 40% { transform: translate(-2px, -2px); } 60% { transform: translate(2px, 2px); } 80% { transform: translate(2px, -2px); } 100% { transform: translate(0); } }
-        #start-screen { position: absolute; inset: 0; background: radial-gradient(circle, #2c3e50, #000); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; text-align: center; }
-        .btn { background: #e74c3c; color: white; padding: 18px 50px; border: none; cursor: pointer; font-size: 18px; font-weight: bold; border-radius: 50px; box-shadow: 0 8px 0 #922b21; transition: 0.2s; }
-        #msg { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); background: white; color: black; padding: 12px 30px; border-radius: 50px; font-weight: bold; display: none; z-index: 100; box-shadow: 0 0 20px #fff; }
+        #hud { top: 30px; left: 30px; }
+        #kill-counter { top: 30px; right: 30px; text-align: right; }
+        .stat-box { background: rgba(0,0,0,0.85); padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 10px; min-width: 200px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .bar-bg { background: #222; height: 12px; border-radius: 6px; overflow: hidden; margin-top: 8px; }
+        #hp-fill { width: 100%; height: 100%; background: linear-gradient(90deg, #ff416c, #ff4b2b); transition: 0.3s; }
+        .rank-badge { padding: 8px 20px; border-radius: 6px; font-weight: 900; font-size: 18px; text-transform: uppercase; border: 2px solid #555; background: #222; color: #aaa; margin-bottom: 10px; display: inline-block; }
+
+        .mobile-ui { position: absolute; z-index: 50; user-select: none; }
+        #joy-base { bottom: 60px; left: 60px; width: 150px; height: 150px; background: rgba(255,255,255,0.1); border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); }
+        #joy-stick { position: absolute; top: 45px; left: 45px; width: 60px; height: 60px; background: rgba(255,255,255,0.4); border-radius: 50%; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+        #btns { bottom: 60px; right: 40px; display: flex; flex-direction: column; gap: 15px; }
+        .btn-m { width: 90px; height: 90px; border-radius: 50%; background: rgba(231, 76, 60, 0.5); border: 3px solid white; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+
+        #start-screen { position: absolute; inset: 0; background: radial-gradient(circle, #2c3e50, #000); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; }
     </style>
 </head>
 <body>
 
 <div id="game-container">
     <div id="start-screen">
-        <h1 style="font-size: 60px; color:#e74c3c; margin:0;">Z-SURVIVAL</h1>
-        <p style="color:#00bfff; font-weight: bold;">OBJECTIF : ULTRA UNREAL (200 KILLS)</p>
-        <button class="btn" onclick="startGame()">LANCER LA SURVIE</button>
-        <p>RECORD : <span id="best-ever">0</span></p>
+        <h1 style="font-size: 80px; color:#e74c3c; margin:0; text-shadow: 0 0 30px rgba(231,76,60,0.5);">Z-SURVIVAL</h1>
+        <p style="color: #bdc3c7; font-size: 20px;">MODE HD & DIFFICULTÉ PROGRESSIVE</p>
+        <button style="background:#e74c3c; color:white; padding:20px 60px; border:none; border-radius:50px; font-weight:bold; font-size: 24px; cursor:pointer; margin-top:30px; box-shadow: 0 10px 0 #8e44ad;" onclick="startGame()">LANCER LE JEU</button>
     </div>
 
     <div id="hud">
-        <div class="stat-box"><small style="opacity:0.6; font-size:10px;">SANTÉ</small><div class="bar-bg"><div id="hp-fill"></div></div></div>
-        <div class="stat-box" style="border-left: 4px solid #f1c40f;">
-            <div style="color:#f1c40f; font-weight:bold;">💰 <span id="money">100</span> $</div>
-            <div style="color:#2ecc71; font-weight:bold; font-size: 13px;">🌵 CACTUS : <span id="cactus-qty">0</span> ('C')</div>
-            <div id="armor-status" style="color:#00bfff; font-size:11px; display:none; margin-top:5px; font-weight:bold;">💎 ARMURE DIAMANT</div>
-            <div id="auto-status" style="color:#ff4757; font-size:11px; display:none; margin-top:2px; font-weight:bold;">🔥 AUTO-SHOOT ACTIVÉ</div>
+        <div class="stat-box"><small>SANTÉ SURVIE</small><div class="bar-bg"><div id="hp-fill"></div></div></div>
+        <div class="stat-box" style="border-left: 6px solid #f1c40f;">
+            <div style="color:#f1c40f; font-size: 22px; font-weight: bold;">💰 <span id="money">100</span> $</div>
+            <div style="color:#2ecc71; font-size: 16px;">🌵 CACTUS DE SOIN : <span id="cactus-qty">0</span></div>
         </div>
     </div>
 
     <div id="kill-counter">
-        <div id="rank-display" class="rank-badge rank-none">DÉBUTANT</div>
-        <div class="stat-box">
-            <div style="font-size: 24px; font-weight: 900;">💀 <span id="current-kills">0</span></div>
-            <div style="font-size: 11px; color: #aaa;">RECORD: <span id="high-score">0</span></div>
-        </div>
+        <div id="rank-display" class="rank-badge">DÉBUTANT</div>
+        <div class="stat-box"><span style="font-size: 24px;">💀 <span id="current-kills">0</span></span></div>
     </div>
 
-    <div id="msg"></div>
-    <canvas id="game" width="900" height="650"></canvas>
+    <div id="joy-base" class="mobile-ui"><div id="joy-stick"></div></div>
+    <div id="btns" class="mobile-ui">
+        <div class="btn-m" style="width:120px; height:120px; background:rgba(231,76,60,0.7); font-size: 18px;" id="fire">TIRER</div>
+        <div class="btn-m" onclick="pickup(); shopAction();">ACTION</div>
+        <div class="btn-m" onclick="eat();" style="background: rgba(46, 204, 113, 0.5);">SOIN</div>
+    </div>
+
+    <canvas id="game"></canvas>
 </div>
 
 <script>
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-// ===== CONTROLES TACTILES =====
-let joyActive = false;
-let joyX = 0, joyY = 0;
-const joystick = document.getElementById("joystick");
-const stick = document.getElementById("stick");
 
-joystick.addEventListener("touchstart", e => {
-    joyActive = true;
+// CONFIGURATION FULL HD
+canvas.width = 1920;
+canvas.height = 1080;
+
+let isRunning = false, map = "DEHORS";
+let stats = { hp: 100, money: 100, cactus: 0, kills: 0, speed: 7 }; // Vitesse joueur adaptée au HD
+let player = { x: 960, y: 540, walkFrame: 0, weapon: null };
+let zombies = [], bullets = [], items = [{x: 300, y: 800, type: 'sword', name: 'KATANA'}, {x: 1500, y: 300, type: 'gun', name: 'FUSIL M4'}];
+let joy = { active: false, x: 0, y: 0, angle: 0 };
+
+// --- GESTION DE LA DIFFICULTÉ ---
+let zombieBaseSpeed = 1.2; // Très lent au début
+let currentDifficulty = 1;
+
+function updateDifficulty() {
+    // Augmente la vitesse tous les 5 kills
+    currentDifficulty = 1 + (stats.kills * 0.15);
+    
+    let rank = document.getElementById('rank-display');
+    if(stats.kills < 10) { rank.innerText = "DÉBUTANT"; rank.style.borderColor = "#555"; }
+    else if(stats.kills < 25) { rank.innerText = "SURVIVANT"; rank.style.borderColor = "#2ecc71"; rank.style.color = "#2ecc71"; }
+    else if(stats.kills < 50) { rank.innerText = "TUEUR"; rank.style.borderColor = "#f1c40f"; rank.style.color = "#f1c40f"; }
+    else { rank.innerText = "LÉGENDE"; rank.style.borderColor = "#e74c3c"; rank.style.color = "#e74c3c"; }
+}
+
+// CONTROLES
+const jBase = document.getElementById('joy-base');
+const jStick = document.getElementById('joy-stick');
+jBase.addEventListener('touchstart', (e) => { joy.active = true; });
+window.addEventListener('touchmove', (e) => {
+    if(!joy.active) return;
+    let t = e.touches[0];
+    let r = jBase.getBoundingClientRect();
+    let dx = t.clientX - (r.left + 75);
+    let dy = t.clientY - (r.top + 75);
+    let d = Math.min(Math.hypot(dx, dy), 60);
+    joy.angle = Math.atan2(dy, dx);
+    joy.x = Math.cos(joy.angle) * (d/60);
+    joy.y = Math.sin(joy.angle) * (d/60);
+    jStick.style.transform = `translate(${joy.x*60}px, ${joy.y*60}px)`;
 });
+window.addEventListener('touchend', () => { joy.active = false; joy.x = joy.y = 0; jStick.style.transform = 'translate(0,0)'; });
+document.getElementById('fire').addEventListener('touchstart', (e) => { e.preventDefault(); attack(); });
 
-joystick.addEventListener("touchmove", e => {
-    const rect = joystick.getBoundingClientRect();
-    const t = e.touches[0];
-    let x = t.clientX - rect.left - 70;
-    let y = t.clientY - rect.top - 70;
-    const dist = Math.hypot(x,y);
-    if(dist > 50){
-        x *= 50/dist;
-        y *= 50/dist;
-    }
-    stick.style.left = (40 + x) + "px";
-    stick.style.top = (40 + y) + "px";
-    joyX = x / 50;
-    joyY = y / 50;
-});
-
-joystick.addEventListener("touchend", () => {
-    joyActive = false;
-    joyX = joyY = 0;
-    stick.style.left = "40px";
-    stick.style.top = "40px";
-});
-
-document.getElementById("btn-shoot").ontouchstart = () => {
-    mousePressed = true;
-    attack();
-};
-document.getElementById("btn-shoot").ontouchend = () => mousePressed = false;
-
-document.getElementById("btn-eat").ontouchstart = () => eat();
-document.getElementById("btn-action").ontouchstart = () => shopAction();
-
-// VISER AU DOIGT
-canvas.addEventListener("touchmove", e => {
-    const r = canvas.getBoundingClientRect();
-    mouseX = e.touches[0].clientX - r.left;
-    mouseY = e.touches[0].clientY - r.top;
-});
-
-function playSfx(freq, type, duration, vol = 0.05) {
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.type = type;
-    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-    gain.gain.setValueAtTime(vol, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-    osc.connect(gain); gain.connect(audioCtx.destination);
-    osc.start(); osc.stop(audioCtx.currentTime + duration);
-}
-
-let isRunning = false, map = "DEHORS", shopSelection = 0;
-let stats = { hp: 100, money: 100, cactus: 0, kills: 0, hasArmor: false, hasAutoShoot: false, speed: 4.5 };
-let highScore = localStorage.getItem('zombieHighScore') || 0;
-let currentRankName = "DÉBUTANT", spawnTimer = 0, lastShotTime = 0;
-let mousePressed = false, mouseX = 0, mouseY = 0;
-
-let player = { x: 450, y: 325, walkFrame: 0, weapon: null };
-let zombies = [], bullets = [], particles = [], deco = [];
-let items = [{x: 150, y: 500, type: 'sword', name: 'KATANA'}, {x: 750, y: 150, type: 'gun', name: 'FUSIL M4'}];
-
-for(let i=0; i<60; i++) deco.push({x: Math.random()*900, y: Math.random()*650, s: Math.random()*3+1, opacity: Math.random()*0.3});
-
-document.getElementById('best-ever').innerText = highScore;
-document.getElementById('high-score').innerText = highScore;
-
-const keys = {};
-window.onkeydown = (e) => { 
-    keys[e.key.toLowerCase()] = true; 
-    if(e.key.toLowerCase()==='e') pickup(); 
-    if(e.key.toLowerCase()==='c') eat(); 
-    if(e.code==='Space') shopAction();
-    if(map === "MAGASIN") {
-        if(e.key === "ArrowUp") { shopSelection = Math.max(0, shopSelection-1); playSfx(300, 'sine', 0.1); }
-        if(e.key === "ArrowDown") { shopSelection = Math.min(2, shopSelection+1); playSfx(300, 'sine', 0.1); }
-    }
-};
-window.onkeyup = (e) => keys[e.key.toLowerCase()] = false;
-
-canvas.onmousedown = (e) => { mousePressed = true; if(isRunning && !stats.hasAutoShoot) attack(); };
-window.onmouseup = () => mousePressed = false;
-canvas.onmousemove = (e) => {
-    let r = canvas.getBoundingClientRect();
-    mouseX = e.clientX - r.left;
-    mouseY = e.clientY - r.top;
-};
-
-function drawWeaponShape(x, y, type, angle) {
-    ctx.save();
-    ctx.translate(x, y);
-    ctx.rotate(angle);
-    if(type === 'gun') {
-        ctx.fillStyle = "#111";
-        ctx.fillRect(0, -4, 40, 8);
-        ctx.fillRect(5, 4, 8, 12);
-        ctx.fillStyle = "#333";
-        ctx.fillRect(10, -5, 15, 2);
-        ctx.fillStyle = "#555";
-        ctx.fillRect(35, -4, 5, 8);
-    } else {
-        ctx.fillStyle = "#bdc3c7";
-        ctx.beginPath();
-        ctx.moveTo(0, -2); ctx.lineTo(45, -2); ctx.lineTo(48, 0); ctx.lineTo(45, 2); ctx.lineTo(0, 2);
-        ctx.fill();
-        ctx.fillStyle = "#2c3e50";
-        ctx.fillRect(0, -7, 4, 14);
-        ctx.fillStyle = "#800000";
-        ctx.fillRect(-12, -2, 12, 4);
-    }
-    ctx.restore();
-}
-
-function startGame() {
-    audioCtx.resume();
-    document.getElementById('start-screen').style.display = 'none';
-    document.getElementById('hud').style.display = 'block';
-    document.getElementById('kill-counter').style.display = 'block';
-    isRunning = true;
-    render();
-}
-
-function createParticles(x, y, color, count) {
-    for(let i=0; i<count; i++) {
-        particles.push({
-            x: x, y: y, 
-            vx: (Math.random()-0.5)*10, 
-            vy: (Math.random()-0.5)*10, 
-            l: Math.random()*20+10, 
-            c: color
-        });
-    }
-}
-
-function updateRank() {
-    let k = stats.kills;
-    let rankClass = "rank-none", name = "DÉBUTANT";
-    if (k >= 200) { rankClass = "rank-ultra-unreal"; name = "ULTRA UNREAL"; stats.speed = 8.5; }
-    else if (k >= 100) { rankClass = "rank-mega"; name = "MEGA UNREAL"; stats.speed = 6.5; }
-    else if (k >= 60) { rankClass = "rank-unreal"; name = "UNREAL"; }
-    else if (k >= 50) { rankClass = "rank-champion"; name = "CHAMPION"; }
-    else if (k >= 40) { rankClass = "rank-elite"; name = "ÉLITE"; }
-    else if (k >= 30) { rankClass = "rank-diamant"; name = "DIAMANT"; }
-    else if (k >= 25) { rankClass = "rank-or"; name = "OR"; }
-    else if (k >= 20) { rankClass = "rank-argent"; name = "ARGENT"; }
-    else if (k >= 10) { rankClass = "rank-bronze"; name = "BRONZE"; }
-    if(name !== currentRankName) { currentRankName = name; popMsg("RANG : " + name); playSfx(400, 'sine', 0.5); }
-    let badge = document.getElementById('rank-display');
-    badge.className = "rank-badge " + rankClass; badge.innerText = name;
-}
-
-function eat() {
-    if(stats.cactus > 0 && stats.hp < 100) {
-        stats.cactus--; stats.hp = Math.min(100, stats.hp + 25);
-        playSfx(400, 'sine', 0.2, 0.1); popMsg("🌵 SOIN +25 HP"); 
-        createParticles(player.x+20, player.y+20, "#2ecc71", 10);
-        updateUI();
-    }
-}
-
-function shopAction() {
-    // CORRECTION ICI : On autorise l'achat si le joueur est devant le comptoir (Y plus bas)
-    if(map === "MAGASIN" && player.y < 580) {
-        if(shopSelection === 0 && stats.money >= 50) {
-            stats.money -= 50; stats.cactus++; 
-            playSfx(600, 'sine', 0.1); popMsg("🌵 CACTUS ACHETÉ !");
-        } else if(shopSelection === 1 && stats.money >= 100 && !stats.hasAutoShoot) {
-            stats.money -= 100; stats.hasAutoShoot = true;
-            document.getElementById('auto-status').style.display = 'block';
-            playSfx(700, 'square', 0.3); popMsg("🔥 AUTO-SHOOT DÉBLOQUÉ !");
-        } else if(shopSelection === 2 && stats.money >= 1000 && !stats.hasArmor) {
-            stats.money -= 1000; stats.hasArmor = true;
-            document.getElementById('armor-status').style.display = 'block';
-            playSfx(800, 'triangle', 0.4); popMsg("💎 ARMURE DIAMANT !");
-        }
-        updateUI();
-    }
-}
-
-function pickup() {
-    items.forEach((it, i) => { if(Math.hypot(player.x - it.x, player.y - it.y) < 60) { player.weapon = it; items.splice(i, 1); playSfx(300, 'square', 0.1); popMsg(it.name + " ÉQUIPÉ"); } });
-}
-
-function attack() {
-    if(!player.weapon || map !== "DEHORS") return;
-    if(player.weapon.type === 'gun') {
-        playSfx(120, 'square', 0.1, 0.03);
-        let a = Math.atan2(mouseY - (player.y+20), mouseX - (player.x+20));
-        bullets.push({x: player.x+20, y: player.y+20, vx: Math.cos(a)*16, vy: Math.sin(a)*16});
-        lastShotTime = Date.now();
-    } else {
-        playSfx(80, 'sawtooth', 0.1, 0.05);
-        zombies.forEach((z, i) => { if(Math.hypot(player.x-z.x, player.y-z.y) < 100) {
-            createParticles(z.x+20, z.y+20, "#ff0000", 15);
-            zombies.splice(i, 1); stats.money += 50; stats.kills++; updateRank(); updateUI();
-        }});
-    }
+function drawShop() {
+    let mx = 860, my = 150, mw = 300, mh = 220;
+    ctx.fillStyle = "#4e342e"; ctx.fillRect(mx, my, mw, mh);
+    ctx.fillStyle = "#3e2723"; for(let i=0; i<mh; i+=20) ctx.fillRect(mx, my+i, mw, 3);
+    ctx.fillStyle = "#c0392b"; ctx.beginPath(); ctx.moveTo(mx-40, my); ctx.lineTo(mx+mw/2, my-120); ctx.lineTo(mx+mw+40, my); ctx.fill();
+    ctx.fillStyle = "#add8e6"; ctx.fillRect(mx+30, my+40, 60, 60); ctx.fillRect(mx+mw-90, my+40, 60, 60);
+    ctx.strokeStyle = "#fff"; ctx.lineWidth = 3; ctx.strokeRect(mx+30, my+40, 60, 60); ctx.strokeRect(mx+mw-90, my+40, 60, 60);
+    ctx.fillStyle = "#3498db"; ctx.fillRect(mx+mw/2-50, my+110, 100, 110);
+    ctx.fillStyle = "#f1c40f"; ctx.font = "bold 35px Arial"; ctx.fillText("S H O P", mx+85, my-30);
 }
 
 function drawZombie(x, y, frame) {
-    let move = Math.sin(frame)*5;
-    ctx.fillStyle = "rgba(0,0,0,0.3)"; ctx.beginPath(); ctx.ellipse(x+20, y+50, 15, 6, 0,0,7); ctx.fill();
-    ctx.fillStyle = "#4a7c44"; ctx.fillRect(x+5, y+15, 30, 35);
-    ctx.fillStyle = "#2d5a27"; ctx.fillRect(x+5, y+35, 30, 15);
-    ctx.fillStyle = "#74a57f"; ctx.fillRect(x+10, y, 20, 20);
-    ctx.fillStyle = "#00ff00"; ctx.shadowBlur = 10; ctx.shadowColor = "lime";
-    ctx.fillRect(x+13, y+6, 5, 5); ctx.fillRect(x+22, y+6, 5, 5);
-    ctx.shadowBlur = 0;
-    ctx.fillStyle = "#74a57f"; ctx.fillRect(x-8, y+20+move, 15, 8); ctx.fillRect(x+33, y+20-move, 15, 8);
+    let move = Math.sin(frame)*8;
+    ctx.fillStyle = "rgba(0,0,0,0.2)"; ctx.beginPath(); ctx.ellipse(x+30, y+80, 25, 10, 0, 0, 7); ctx.fill();
+    ctx.fillStyle = "#4a7c44"; ctx.fillRect(x+10, y+25, 40, 55);
+    ctx.fillStyle = "#74a57f"; ctx.fillRect(x+15, y, 30, 30);
+    ctx.fillStyle = "#0f0"; ctx.fillRect(x+20, y+8, 6, 6); ctx.fillRect(x+35, y+8, 6, 6);
+    ctx.fillStyle = "#74a57f"; ctx.fillRect(x-12, y+35+move, 22, 12); ctx.fillRect(x+50, y+35-move, 22, 12);
 }
 
 function render() {
-    ctx.clearRect(0,0,900,650);
+    if(!isRunning) return;
+    updateDifficulty();
+    ctx.clearRect(0,0,1920,1080);
+    
     if(map === "DEHORS") {
-        ctx.fillStyle = "#2d5a27"; ctx.fillRect(0,0,900,650);
-        deco.forEach(d => { ctx.fillStyle = `rgba(255,255,255,${d.opacity})`; ctx.fillRect(d.x, d.y, d.s, d.s); });
-        
-        let mx = 350, my = 80, mw = 200, mh = 150;
-        ctx.fillStyle = "#4e342e"; ctx.fillRect(mx, my, mw, mh);
-        ctx.fillStyle = "#3e2723"; for(let i=0; i<mh; i+=15) ctx.fillRect(mx, my+i, mw, 2);
-        ctx.fillStyle = "rgba(0,0,0,0.2)"; ctx.fillRect(mx, my, 20, mh);
-        ctx.fillStyle = "#c0392b"; ctx.beginPath(); ctx.moveTo(mx-30, my); ctx.lineTo(mx+mw/2, my-80); ctx.lineTo(mx+mw+30, my); ctx.fill();
-        ctx.strokeStyle = "#922b21"; ctx.lineWidth = 4; ctx.stroke();
-        ctx.fillStyle = "#3498db"; ctx.fillRect(mx+mw/2-40, my+80, 80, 70);
-        ctx.strokeStyle = "#2980b9"; ctx.lineWidth = 4; ctx.strokeRect(mx+mw/2-40, my+80, 80, 70);
-        ctx.fillStyle = "#add8e6"; ctx.fillRect(mx+20, my+30, 40, 40); ctx.fillRect(mx+mw-60, my+30, 40, 40);
-        ctx.strokeStyle = "#fff"; ctx.lineWidth = 2; ctx.strokeRect(mx+20, my+30, 40, 40); ctx.strokeRect(mx+mw-60, my+30, 40, 40);
-        
-        ctx.shadowBlur = 15; ctx.shadowColor = "#f1c40f";
-        ctx.fillStyle = "#f1c40f"; ctx.font = "bold 24px 'Courier New'";
-        ctx.fillText("S H O P", mx+55, my-20);
-        ctx.shadowBlur = 0;
+        ctx.fillStyle = "#2d5a27"; ctx.fillRect(0,0,1920,1080);
+        // Détails herbe
+        ctx.fillStyle = "#274e22";
+        for(let i=0; i<20; i++) ctx.fillRect(i*100, (i%3)*300, 5, 5);
 
-        ctx.fillStyle = "#f39c12"; ctx.shadowBlur = 10; ctx.shadowColor = "orange";
-        ctx.beginPath(); ctx.arc(mx+50, my+100, 5, 0, Math.PI*2); ctx.arc(mx+mw-50, my+100, 5, 0, Math.PI*2); ctx.fill();
-        ctx.shadowBlur = 0;
-
-        items.forEach(it => { 
-            drawWeaponShape(it.x, it.y, it.type, 0); 
-            ctx.fillStyle="white"; ctx.font="12px Arial";
-            ctx.fillText(it.name + " [E]", it.x - 15, it.y - 15); 
-        });
+        drawShop();
         
-        let spawnRate = Math.max(300, 4000 - (stats.kills * 40));
-        spawnTimer += 16;
-        if(spawnTimer >= spawnRate) { zombies.push({x: Math.random()*900, y: -50, f: 0}); spawnTimer = 0; }
-
-        if(stats.hasAutoShoot && mousePressed && player.weapon?.type === 'gun') {
-            if(Date.now() - lastShotTime > 120) attack();
-        }
+        if(joy.active) { player.x += joy.x * stats.speed; player.y += joy.y * stats.speed; player.walkFrame += 0.2; }
+        
+        // Apparition limitée mais progressive
+        if(Math.random() < 0.015) zombies.push({x: Math.random()*1920, y: -100, f: 0});
 
         zombies.forEach((z, zi) => {
             let a = Math.atan2(player.y - z.y, player.x - z.x);
-            z.x += Math.cos(a)*1.7; z.y += Math.sin(a)*1.7; z.f += 0.1;
+            // VITESSE CALCULÉE
+            let speed = zombieBaseSpeed * currentDifficulty;
+            z.x += Math.cos(a) * speed; 
+            z.y += Math.sin(a) * speed; 
+            z.f += 0.1;
             drawZombie(z.x, z.y, z.f);
-            if(Math.hypot(player.x-z.x, player.y-z.y) < 35) { 
-                stats.hp -= (stats.hasArmor ? 0.1 : 0.4); 
-                if(Math.random()<0.1) createParticles(player.x+20, player.y+20, "#ff0000", 2);
-                updateUI(); 
-            }
+            if(Math.hypot(player.x-z.x, player.y-z.y) < 50) { stats.hp -= 0.5; updateUI(); }
         });
 
         bullets.forEach((b, i) => {
-            b.x += b.vx; b.y += b.vy; ctx.fillStyle = "#ff0"; ctx.fillRect(b.x, b.y, 8, 3);
-            zombies.forEach((z, zi) => { if(Math.hypot(b.x-z.x-20, b.y-z.y-20) < 30) { 
-                createParticles(z.x+20, z.y+20, "#ff0000", 15);
-                zombies.splice(zi,1); bullets.splice(i,1); stats.money+=50; stats.kills++; updateRank(); updateUI(); playSfx(200, 'sine', 0.1, 0.03); 
-            } });
+            b.x += b.vx; b.y += b.vy; ctx.fillStyle = "#f1c40f"; ctx.fillRect(b.x, b.y, 15, 5);
+            zombies.forEach((z, zi) => { if(Math.hypot(b.x-z.x-30, b.y-z.y-30) < 45) { zombies.splice(zi,1); bullets.splice(i,1); stats.money+=50; stats.kills++; updateUI(); } });
+            if(b.x<0||b.x>1920||b.y<0||b.y>1080) bullets.splice(i,1);
         });
+
+        items.forEach(it => { 
+            ctx.fillStyle="white"; ctx.font="bold 20px Arial"; ctx.fillText(it.name, it.x, it.y-20); 
+            ctx.fillStyle="#f1c40f"; ctx.fillRect(it.x, it.y, 60, 15); 
+        });
+
+        if(player.y < 370 && player.x > 910 && player.x < 1010) { map = "MAGASIN"; player.y = 900; }
     } else {
-        ctx.fillStyle = "#111"; ctx.fillRect(0,0,900,650);
-        ctx.fillStyle = "#4e342e"; ctx.fillRect(100, 100, 700, 520);
-        ctx.strokeStyle = "#3e2723"; for(let i=0; i<13; i++) ctx.strokeRect(100, 100 + i*40, 700, 40);
-        ctx.fillStyle = "#7f0000"; ctx.fillRect(280, 400, 340, 130);
-        ctx.strokeStyle = "#d4af37"; ctx.strokeRect(285, 405, 330, 120);
-        ctx.fillStyle = "#2b1d0e"; ctx.fillRect(300, 250, 300, 80);
-        ctx.fillStyle = "#ffdbac"; ctx.fillRect(438, 175, 24, 25);
-        ctx.fillStyle = "#c0392b"; ctx.fillRect(438, 175, 24, 8); 
-        ctx.fillStyle = "black"; ctx.fillRect(443, 185, 3, 3); ctx.fillRect(452, 185, 3, 3);
-        ctx.fillStyle = "#2c3e50"; ctx.fillRect(430, 200, 40, 35);
-        ctx.fillStyle = "white"; ctx.font = "bold 18px Arial"; ctx.fillText("ENOHA LE MARCHAND", 360, 140);
-        
-        ctx.font = "14px Arial";
-        ctx.fillStyle = (shopSelection === 0) ? "#fff" : "#444";
-        ctx.fillText((shopSelection === 0 ? "> " : "") + "🌵 CACTUS SOIN (50$)", 380, 340);
-        ctx.fillStyle = (shopSelection === 1) ? "#fff" : "#444";
-        ctx.fillText((shopSelection === 1 ? "> " : "") + "🔥 AUTO-SHOOT (100$)", 380, 370);
-        ctx.fillStyle = (shopSelection === 2) ? "#fff" : "#444";
-        ctx.fillText((shopSelection === 2 ? "> " : "") + "💎 ARMURE DIAMANT (1000$)", 380, 400);
-
-        ctx.fillStyle = "#f1c40f"; ctx.font = "12px Arial";
-        ctx.fillText("FLÈCHES [HAUT/BAS] POUR CHOISIR", 360, 230);
-        ctx.fillText("[ ESPACE ] POUR ACHETER", 390, 245);
+        ctx.fillStyle = "#111"; ctx.fillRect(0,0,1920,1080);
+        ctx.fillStyle = "white"; ctx.font="50px Arial"; ctx.fillText("MARCHAND : SOIN (+25 HP) = 50$", 500, 300);
+        ctx.font="30px Arial"; ctx.fillText("Appuie sur ACTION pour acheter", 700, 400);
+        ctx.fillText("DESCENDS POUR SORTIR", 800, 1000);
+        if(player.y > 950 || (joy.active && joy.y > 0.5)) { map = "DEHORS"; player.y = 400; }
     }
-    
-    let bob = Math.sin(player.walkFrame)*4;
-    ctx.fillStyle = "rgba(0,0,0,0.3)";
-    ctx.beginPath(); ctx.ellipse(player.x+20, player.y+50, 18, 7, 0, 0, Math.PI*2); ctx.fill();
 
-    ctx.save();
-    if(stats.kills >= 200) { ctx.shadowBlur = 20; ctx.shadowColor = "white"; }
-    if(stats.hasArmor) { ctx.shadowBlur = 15; ctx.shadowColor = "#00bfff"; ctx.strokeStyle = "#00bfff"; ctx.strokeRect(player.x+4, player.y-6+bob, 32, 52); }
-    ctx.fillStyle = stats.hasArmor ? "#00bfff" : "#34495e"; ctx.fillRect(player.x+5, player.y+15+bob, 30, 32);
-    ctx.fillStyle = "#ffdbac"; ctx.fillRect(player.x+10, player.y+bob, 20, 20);
-    ctx.fillStyle = "#c0392b"; ctx.fillRect(player.x+8, player.y-5+bob, 24, 10);
-    
-    if(player.weapon) {
-        let angle = Math.atan2(mouseY - (player.y+25), mouseX - (player.x+15));
-        drawWeaponShape(player.x+15, player.y+25+bob, player.weapon.type, angle);
+    // JOUEUR HD
+    let bob = Math.sin(player.walkFrame)*6;
+    ctx.fillStyle = "#34495e"; ctx.fillRect(player.x+5, player.y+20+bob, 45, 50);
+    ctx.fillStyle = "#ffdbac"; ctx.fillRect(player.x+12, player.y+bob, 32, 32);
+    if(player.weapon) { 
+        ctx.fillStyle="#2c3e50"; 
+        let gunAngle = joy.active ? joy.angle : 0;
+        ctx.save();
+        ctx.translate(player.x+25, player.y+40+bob);
+        ctx.rotate(gunAngle);
+        ctx.fillRect(0, -5, 50, 12);
+        ctx.restore();
     }
-    ctx.restore();
 
-    particles.forEach((p, i) => {
-        p.x += p.vx; p.y += p.vy; p.l--;
-        ctx.fillStyle = p.c; ctx.fillRect(p.x, p.y, 3, 3);
-        if(p.l <= 0) particles.splice(i, 1);
-    });
-
-    if(isRunning) {
-       if(joyActive){
-    player.x += joyX * stats.speed;
-    player.y += joyY * stats.speed;
-    player.walkFrame += 0.2;
-} else {
-    if(keys['z']) player.y -= stats.speed;
-    if(keys['s']) player.y += stats.speed;
-    if(keys['q']) player.x -= stats.speed;
-    if(keys['d']) player.x += stats.speed;
-    if(keys['z']||keys['s']||keys['q']||keys['d']) player.walkFrame += 0.2;
-}
-
-
-        if(map === "DEHORS" && player.y < 230 && player.x > 400 && player.x < 500) { map = "MAGASIN"; player.y = 550; playSfx(200, 'sine', 0.2); }
-        if(map === "MAGASIN" && player.y > 610) { map = "DEHORS"; player.y = 260; playSfx(200, 'sine', 0.2); }
-    }
-    if(stats.hp <= 0) { localStorage.setItem('zombieHighScore', Math.max(highScore, stats.kills)); location.reload(); }
+    if(stats.hp <= 0) { alert("GAME OVER! KILLS: " + stats.kills); location.reload(); }
     requestAnimationFrame(render);
 }
-function popMsg(t) { let e=document.getElementById('msg'); e.innerText=t; e.style.display='block'; setTimeout(()=>e.style.display='none', 2000); }
-function updateUI() {
-    document.getElementById('hp-fill').style.width = stats.hp + "%";
-    document.getElementById('money').innerText = stats.money;
-    document.getElementById('cactus-qty').innerText = stats.cactus;
-    document.getElementById('current-kills').innerText = stats.kills;
-}
+
+function attack() { if(!player.weapon || map !== "DEHORS") return; let a = joy.active ? joy.angle : 0; bullets.push({x: player.x+25, y: player.y+40, vx: Math.cos(a)*25, vy: Math.sin(a)*25}); }
+function pickup() { items.forEach((it, i) => { if(Math.hypot(player.x-it.x, player.y-it.y)<100) { player.weapon=it; items.splice(i,1); } }); }
+function eat() { if(stats.cactus > 0 && stats.hp < 100) { stats.cactus--; stats.hp = Math.min(100, stats.hp+25); updateUI(); } }
+function shopAction() { if(map === "MAGASIN" && stats.money >= 50) { stats.money -= 50; stats.cactus++; updateUI(); } }
+function startGame() { document.getElementById('start-screen').style.display='none'; document.getElementById('hud').style.display='block'; document.getElementById('kill-counter').style.display='block'; isRunning=true; render(); }
+function updateUI() { document.getElementById('hp-fill').style.width = stats.hp+"%"; document.getElementById('money').innerText = stats.money; document.getElementById('cactus-qty').innerText = stats.cactus; document.getElementById('current-kills').innerText = stats.kills; }
 </script>
 </body>
 </html>
-
-
-
-
